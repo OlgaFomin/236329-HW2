@@ -1,14 +1,12 @@
-function [obj] = read_off(off_filepath)
+function [vertices, triangles] = read_off(off_filepath)
 
     fileID = fopen(off_filepath);
       
     disp '>> Storing the structure...';
     dimRow = true;
     rowCount = 1;
-    %vertexList{1} = [];
-    %faceList{1} = [];
-    vertexList = [];
-    faceList = [];
+    vertices = [];
+    triangles = [];
     
     while (~feof(fileID))
 
@@ -25,20 +23,11 @@ function [obj] = read_off(off_filepath)
                 edgeCount = splittedRow(3);
             else
                 if(rowCount <= vertexCount)
-                    %vertexList{rowCount} = [splittedRow(1) splittedRow(2) splittedRow(3)];
-                    vertexList = [vertexList; splittedRow(1) splittedRow(2) splittedRow(3)];
+                    vertices = [vertices; splittedRow(1) splittedRow(2) splittedRow(3)];
                 end
                 
                 if(vertexCount < rowCount && (rowCount-vertexCount) <= faceCount)  
-                    if(splittedRow(1) == 3)
-                        %faceList{rowCount-vertexCount} = [splittedRow(2) splittedRow(3) splittedRow(4)];
-                        faceList = [faceList; splittedRow(2) splittedRow(3) splittedRow(4)];
-                    end
-                    
-                    if(splittedRow(1) == 4)
-                        %faceList{rowCount-vertexCount} = [splittedRow(2) splittedRow(3) splittedRow(4) splittedRow(5)];
-                        faceList = [faceList; splittedRow(2) splittedRow(3) splittedRow(4) splittedRow(5)];
-                    end
+                    triangles = [triangles; splittedRow(2) splittedRow(3) splittedRow(4)];
                 end
 
                 rowCount = rowCount +1;
@@ -50,12 +39,6 @@ function [obj] = read_off(off_filepath)
             end
         end
     end
-    
-    obj.vertices = vertexList;
-    obj.faces = faceList;
-    obj.vertexCount = vertexCount;
-    obj.faceCount = faceCount;
-    obj.edgeCount = edgeCount;
     
     disp '>> Strucure stored';
 end

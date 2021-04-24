@@ -1,36 +1,27 @@
-function plot_obj(obj)
+function plot_obj(vertices, triangles)
 
-    vertexList = obj.vertices;
-    faceList = obj.faces;
-    
     showVertices = 0;
     disp '>> Plot beginning';
     figure(); grid on; grid minor; axis equal;
     hold on;
     if(showVertices)
-        for i=1:size(vertexList,2)
-            %currV = vertexList{i};
-            currV = vertexList(i);
+        for i=1:size(vertices,2)
+            currV = vertices(i);
             plot3(currV(1),currV(2),currV(3),'ob');
 
         end
     end
-    %for j=1:size(faceList,2)
-    for j=1:size(faceList,1)
+    for j=1:size(triangles,1)
         
-        %currF = faceList{j};
-        currF = faceList(j,:);
+        currF = triangles(j,:);
         
         xCoo = [];
         yCoo = [];
         zCoo = [];
         for k=1:size(currF,2)
-%             xCoo = [xCoo vertexList{currF(k)+1}(1)];
-%             yCoo = [yCoo vertexList{currF(k)+1}(2)];
-%             zCoo = [zCoo vertexList{currF(k)+1}(3)];
-            xCoo = [xCoo vertexList(currF(k)+1,1)];
-            yCoo = [yCoo vertexList(currF(k)+1,2)];
-            zCoo = [zCoo vertexList(currF(k)+1,3)];
+            xCoo = [xCoo vertices(currF(k)+1,1)];
+            yCoo = [yCoo vertices(currF(k)+1,2)];
+            zCoo = [zCoo vertices(currF(k)+1,3)];
         end
         xCoo = [xCoo xCoo(1)];
         yCoo = [yCoo yCoo(1)];
