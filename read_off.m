@@ -2,7 +2,8 @@ function [vertices, triangles] = read_off(off_filepath)
 
     fileID = fopen(off_filepath);
       
-    disp '>> Storing the structure...';
+    % disp '>> Storing the structure...';
+    fprintf('>> Storing the structure...')
     dimRow = true;
     rowCount = 1;
     vertices = [];
@@ -27,18 +28,18 @@ function [vertices, triangles] = read_off(off_filepath)
                 end
                 
                 if(vertexCount < rowCount && (rowCount-vertexCount) <= faceCount)  
-                    triangles = [triangles; splittedRow(2) splittedRow(3) splittedRow(4)];
+                    triangles = [triangles; splittedRow(2) + 1, splittedRow(3) + 1, splittedRow(4) + 1];
                 end
 
                 rowCount = rowCount +1;
 
                 % progress
                 if(mod(rowCount,1000)==0)
-                    disp('.');
+                    fprintf('.');
                 end
             end
         end
     end
     
-    disp '>> Strucure stored';
+    fprintf('>> Strucure stored');
 end

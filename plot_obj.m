@@ -19,9 +19,9 @@ function plot_obj(vertices, triangles)
         yCoo = [];
         zCoo = [];
         for k=1:size(currF,2)
-            xCoo = [xCoo vertices(currF(k)+1,1)];
-            yCoo = [yCoo vertices(currF(k)+1,2)];
-            zCoo = [zCoo vertices(currF(k)+1,3)];
+            xCoo = [xCoo vertices(currF(k),1)];
+            yCoo = [yCoo vertices(currF(k),2)];
+            zCoo = [zCoo vertices(currF(k),3)];
         end
         xCoo = [xCoo xCoo(1)];
         yCoo = [yCoo yCoo(1)];
