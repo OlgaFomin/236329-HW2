@@ -51,27 +51,7 @@ classdef mesh < handle
             faces_area    = obj.get_faces_area();
             vf_area_adj   = obj.vf_adj.*faces_area';
             vertices_area = sum(vf_area_adj,2)/3;
-        end
-        function visualize_fun(obj, fun, type) 
-            if strcmp(type,"faces")
-                figure()
-                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'FaceColor','flat');
-                colorbar
-                if min(fun)~=max(fun)
-                    caxis([min(fun) max(fun)])
-                end
-            elseif strcmp(type,"vertices")
-                figure()
-                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'EdgeColor','interp','FaceColor','none');
-                colorbar
-                if min(fun)~=max(fun)
-                    caxis([min(fun) max(fun)])
-                end
-            else
-                fprintf('>> unvalid type. type should be faces/vertices\n')
-            end
-    
-        end
+        end      
         function Iftov = iterp_face_to_vertex(obj)
             
             Af = obj.get_faces_area();
@@ -163,7 +143,27 @@ classdef mesh < handle
             Nv = [Nvx, Nvy, Nvz];
             Nv_norm = vecnorm(Nv,2,2);
             Nv = Nv./Nv_norm;
-            coord = obj.vertices();            
+            coord = obj.vertices;            
+        end
+        function visualize_fun(obj, fun, type) 
+            if strcmp(type,"faces")
+                figure()
+                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'FaceColor','flat');
+                colorbar
+                if min(fun)~=max(fun)
+                    caxis([min(fun) max(fun)])
+                end
+            elseif strcmp(type,"vertices")
+                figure()
+                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'EdgeColor','interp','FaceColor','none');
+                colorbar
+                if min(fun)~=max(fun)
+                    caxis([min(fun) max(fun)])
+                end
+            else
+                fprintf('>> unvalid type. type should be faces/vertices\n')
+            end
+    
         end
         function visualize_vec(obj, coord, vec, fun, type)
             X = coord(:,1);
@@ -174,8 +174,8 @@ classdef mesh < handle
             vecy = vec(:,2);
             vecz = vec(:,3);
             
-            figure()
-            quiver3(X, Y, Z, vecx, vecy, vecz, 2, 'color', '#0072BD')
+            figure();
+            quiver3(X, Y, Z, vecx, vecy, vecz,'color', '#0072BD');
             hold on
             
             if strcmp(type,"faces")
@@ -186,18 +186,18 @@ classdef mesh < handle
                 end
                 
             elseif strcmp(type,"vertices")
-                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'EdgeColor','interp','FaceColor','none');
+                patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'EdgeColor','interp','FaceColor','black');
                 colorbar
                 if min(fun)~=max(fun)
                     caxis([min(fun) max(fun)])
                 end
                 
             else
-                patch('Faces',obj.faces,'Vertices',obj.vertices,'EdgeColor','black','FaceColor','#4DBEEE') 
+                patch('Faces',obj.faces,'Vertices',obj.vertices,'EdgeColor','black','FaceColor','#4DBEEE');
             end
             
             axis equal
-            
+            hold off
         end
         function G = calc_gauss_curv(obj)
             
@@ -240,6 +240,39 @@ classdef mesh < handle
             Av = obj.get_vertices_area();
             G = (2*pi - sum(vtheta_adj,2))./Av;
 
+        end
+        function H = calc_mean_curv(obj)
+            
+            x = obj.vertices(:,1);
+            y = obj.vertices(:,2);
+            z = obj.vertices(:,3);
+            
+            lap_x = del2(x);
+            lap_y = del2(y);
+            lap_z = del2(z);
+            
+            lap = [lap_x, lap_y, lap_z];
+            H = vecnorm(lap,2,2);
+            
+        end
+        function gradf = calc_gradf(obj, f)
+            vi = obj.faces(:,1);
+            vj = obj.faces(:,2);
+            vk = obj.faces(:,3);
+           
+            xi = obj.vertices(vi,:);
+            xj = obj.vertices(vj,:);
+            xk = obj.vertices(vk,:);
+           
+            fi = f(vi);
+            fj = f(vj);
+            fk = f(vk);
+           
+            faces_area = obj.get_faces_area();
+            [Nf, ~] = obj.face_normal();
+            %gradf = (fi - fj).*cross(Nf, xi - xk, 2)./(2*faces_area) + (fk - fi).*cross(Nf, xj - xi, 2)./(2*faces_area);
+            gradf = (fi - fj).*(xi - xk)./(2*faces_area) + (fk - fi).*(xj - xi)./(2*faces_area);
+         
         end
         
     end
