@@ -255,25 +255,116 @@ classdef mesh < handle
             H = vecnorm(lap,2,2);
             
         end
-        function gradf = calc_gradf(obj, f)
-            vi = obj.faces(:,1);
-            vj = obj.faces(:,2);
-            vk = obj.faces(:,3);
+        function E = calc_E(obj)
+            
+            % vertex indices
+            v1 = obj.faces(:,1);
+            v2 = obj.faces(:,2);
+            v3 = obj.faces(:,3);
            
-            xi = obj.vertices(vi,:);
-            xj = obj.vertices(vj,:);
-            xk = obj.vertices(vk,:);
-           
-            fi = f(vi);
-            fj = f(vj);
-            fk = f(vk);
-           
-            faces_area = obj.get_faces_area();
+            % vertex coordinates
+            x1 = obj.vertices(v1,:);
+            x2 = obj.vertices(v2,:);
+            x3 = obj.vertices(v3,:);
+            
+            % rotated vectors
             [Nf, ~] = obj.face_normal();
-            %gradf = (fi - fj).*cross(Nf, xi - xk, 2)./(2*faces_area) + (fk - fi).*cross(Nf, xj - xi, 2)./(2*faces_area);
-            gradf = (fi - fj).*(xi - xk)./(2*faces_area) + (fk - fi).*(xj - xi)./(2*faces_area);
-         
+            Je1 = cross(Nf, x3 - x2, 2);
+            Je2 = cross(Nf, x1 - x3, 2);
+            Je3 = cross(Nf, x2 - x1, 2);
+            
+            % E matrix
+            F = size(obj.faces,1);
+            V = size(obj.vertices,1);
+            r = [(1:F)' ; (1:F)' ; (1:F)'];
+            c = [v1; v2; v3];
+            val = [Je1 ; Je2 ; Je3];
+            
+            Ex = sparse(F,V);
+            Ex(sub2ind(size(Ex),r,c)) = val(:,1);
+            
+            Ey = sparse(F,V);
+            Ey(sub2ind(size(Ey),r,c)) = val(:,2);
+            
+            Ez = sparse(F,V);
+            Ez(sub2ind(size(Ez),r,c)) = val(:,3);
+            
+            E = [Ex ;Ey ;Ez];
+            
         end
-        
+        function grad = calc_grad(obj) 
+            
+            % Calc E
+            E = obj.calc_grad();
+            
+            % Gf matrix
+            faces_area = obj.get_faces_area();
+            Gf = [faces_area; faces_area; faces_area];
+            
+            % Calc grad
+            grad = 0.5*1./Gf.*E;
+            
+            
+        end
+        function div = calc_div(obj)
+            
+            % Gf matrix
+            faces_area = obj.get_faces_area();
+            Gf = [faces_area; faces_area; faces_area];
+            
+            % Gv matrix
+            Gv = obj.get_vertices_area();
+            
+            % Calc div
+            grad = obj.calc_grad();
+            div = -1./Gv.*grad'.*Gf';
+            
+        end
+        function L = calc_laplas(obj)
+            
+            % Gf matrix
+            faces_area = obj.get_faces_area();
+            Gf = [faces_area; faces_area; faces_area];
+            
+            % Gv matrix
+            Gv = obj.get_vertices_area();
+            
+            % Calc E
+            E = obj.calc_E();
+            
+            L = 0.25*1./Gv.*E'.*Gf'*E;
+   
+        end
+        function Lcot = calc_laplas_cot(obj)
+            
+            Av = obj.get_vertices_area();
+            T = obj.faces;
+            X = obj.vertices;
+            nv = size(X,1);
+            
+            % Triangle's edges length
+            L1 = vecnorm(X(T(:,2),:) - X(T(:,3),:), 2, 2);  
+            L2 = vecnorm(X(T(:,1),:) - X(T(:,3),:), 2, 2);  
+            L3 = vecnorm(X(T(:,1),:) - X(T(:,2),:), 2, 2);  
+            
+            % Triangles cos angles
+            A1 = (L2.^2 + L3.^2 - L1.^2)./(2.*L2.*L3);
+            A2 = (L1.^2 + L3.^2 - L2.^2)./(2.*L1.*L3);
+            A3 = (L1.^2 + L2.^2 - L3.^2)./(2.*L1.*L2);
+            A = [A1 A2 A3];
+            A = acos(A);
+            
+            
+            I = [T(:,1); T(:,2); T(:,3)];
+            J = [T(:,2); T(:,3); T(:,1)];
+            S = 0.5*cot([A(:,3); A(:,1); A(:,2)]);
+            In = [I; J; I; J];
+            Jn = [J; I; I; J];
+            Sn = [-S; -S; S; S];
+            
+            
+            Lcot = sparse(In, Jn, Sn, nv, nv);
+            
+        end   
     end
 end
