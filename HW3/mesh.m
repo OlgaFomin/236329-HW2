@@ -1,4 +1,4 @@
-classdef mesh < handle
+classdef Mesh < handle
     
     properties 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,7 +18,7 @@ classdef mesh < handle
     end
     
     methods  
-        function obj = mesh(vertices, faces)
+        function obj = Mesh(vertices, faces)
             
             nv = size(vertices,1);
             nf = size(faces,1);
