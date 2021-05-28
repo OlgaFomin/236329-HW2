@@ -295,7 +295,7 @@ classdef mesh < handle
         function grad = calc_grad(obj) 
             
             % Calc E
-            E = obj.calc_grad();
+            E = obj.calc_E();
             
             % Gf matrix
             faces_area = obj.get_faces_area();
