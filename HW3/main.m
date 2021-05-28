@@ -8,7 +8,7 @@ clear all; close all; clc
 %% Objectives
 
 % 1
-off_filepath = 'hw2_data/torus_fat_r2.off';
+off_filepath = 'hw2_data/sphere_s1.off';
 [vertices, faces] = read_off(off_filepath);
 obj = mesh(vertices, faces);
 
@@ -36,7 +36,6 @@ obj.visualize_fun(H, 'vertices');
 
 % 2a
 % Gradiant
-gradf = calc_gradf(obj, H);
 vertices = obj.vertices;
 faces = obj.faces;
 
@@ -48,17 +47,23 @@ xc = (v1(:,1) + v2(:,1) + v3(:,1))/3;
 yc = (v1(:,2) + v2(:,2) + v3(:,2))/3;
 zc = (v1(:,3) + v2(:,3) + v3(:,3))/3;
 
+grad = obj.calc_grad();
+f = vertices(:,3);
+gradf = grad*f;
+F = size(obj.faces,1);
+gradf = [gradf(1:F) gradf(F+1:2*F) gradf(2*F+1:3*F)];
+
 coord = [xc, yc, zc];
-obj.visualize_vec(coord,gradf./vecnorm(gradf,2,2),G,'vertices');
+obj.visualize_vec(coord,gradf./vecnorm(gradf,2,2),0,'none');
 
 % Divergence
-Fx = gradf(:,1);
-Fy = gradf(:,2);
-Fz = gradf(:,3);
-X = xc;
-Y = yc;
-Z = zc;
+div = obj.calc_div();
+divf = div*[gradf(:,1);gradf(:,2);gradf(:,3)];
+obj.visualize_fun(divf, 'vertices');
 
-div = divergence(X,Y,Z,Fx,Fy,Fz);
+% Laplacian
+L = obj.calc_laplas();
+obj.visualize_fun(vertices(:,3), 'vertices');
+
 
 
