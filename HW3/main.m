@@ -10,7 +10,7 @@ clear all; close all; clc
 % 1
 off_filepath = 'hw2_data/sphere_s1.off';
 [vertices, faces] = read_off(off_filepath);
-mesh_sphere = Mesh(vertices, faces);
+mesh_sphere = MeshHandle(vertices, faces);
 
 
 [Nf,coord] = mesh_sphere.face_normal();
@@ -63,7 +63,12 @@ mesh_sphere.visualize_fun(divf, 'vertices');
 
 % Laplacian
 L = mesh_sphere.calc_laplas();
-mesh_sphere.visualize_fun(vertices(:,3), 'vertices');
+mesh_sphere.visualize_fun(diag(L), 'vertices');
+
+% 2b
+% Comparing Laplace operator with cot-laplce implementation:
+cotL = mesh_sphere.calc_laplas_cot();
+mesh_sphere.visualize_fun(diag(cotL), 'vertices');
 
 
 
