@@ -332,7 +332,8 @@ classdef MeshHandle < handle
             % Calc E
             E = obj.calc_E();
             
-            L = 0.25*1./Gv.*E'.*Gf'*E;
+            L = 0.25 * inv(diag(Gv)) * E' * diag(Gf)' * E;
+            % L = - obj.calc_div * obj.calc_grad ;
    
         end
         function Lcot = calc_laplas_cot(obj)
