@@ -68,7 +68,7 @@ mesh_sphere.visualize_fun(diag(L), 'vertices');
 % 2b
 % Comparing Laplace operator with cot-laplce implementation:
 cotL = mesh_sphere.calc_laplas_cot();
-mesh_sphere.visualize_fun(diag(cotL), 'vertices');
-
+L = mesh_sphere.calc_laplas();
+assert(abs(max(max(cotL - L)) ) < 1e-8) 
 
 

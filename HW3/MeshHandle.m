@@ -322,18 +322,7 @@ classdef MeshHandle < handle
         end
         function L = calc_laplas(obj)
             
-            % Gf matrix
-            faces_area = obj.get_faces_area();
-            Gf = [faces_area; faces_area; faces_area];
-            
-            % Gv matrix
-            Gv = obj.get_vertices_area();
-            
-            % Calc E
-            E = obj.calc_E();
-            
-            L = 0.25 * inv(diag(Gv)) * E' * diag(Gf)' * E;
-            % L = - obj.calc_div * obj.calc_grad ;
+            L = - obj.calc_div * obj.calc_grad ; 
    
         end
         function Lcot = calc_laplas_cot(obj)
