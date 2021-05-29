@@ -64,6 +64,7 @@ off_filepath = 'hw3_data/tri_quad_grid.off';
 [vertices, faces] = read_off(off_filepath);
 mesh_quad = MeshHandle(vertices, faces);
 f = repmat(1:30, 30,1)';
+figure
 mesh_quad.visualize_fun(f(:), 'vertices')
 view(3)
 xlabel('X')
