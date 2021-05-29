@@ -89,10 +89,13 @@ classdef MeshHandle < handle
             fprintf('>> Chi is %u \n', chi)
             genus = 0.5*(2 - boundary_edges - chi);
         end
+        function edges = get_edges(obj)
+            [v1,v2] = find(tril(obj.v_adj,-1) == 1);
+            edges = obj.vertices(v1,:) - obj.vertices(v2,:);
+        end
         function avg_edge_length = get_avg_edge_length(obj)
            
-            [v1,v2] = find(tril(obj.v_adj,-1) == 1);
-            edge_vectors = obj.vertices(v1,:) - obj.vertices(v2,:);
+            edge_vectors = obj.get_edges();
             lengths = vecnorm(edge_vectors,2,2);
             avg_edge_length = mean(lengths);
             
@@ -355,5 +358,13 @@ classdef MeshHandle < handle
             Lcot = diag(Av) \ sparse(In, Jn, Sn, nv, nv); % same as inv(diag(Av)) * sparse(In, Jn, Sn, nv, nv)
             
         end   
+        function W = calc_W(obj)
+           
+            E = obj.calc_E();
+            faces_area = obj.get_faces_area();
+            Gf = [faces_area; faces_area; faces_area];
+            W = 0.25*E'.*1./Gf'*E;
+               
+        end
     end
 end
