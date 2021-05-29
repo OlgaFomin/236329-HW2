@@ -71,6 +71,22 @@ cotL = mesh_sphere.calc_laplas_cot();
 L = mesh_sphere.calc_laplas();
 assert(abs(max(max(cotL - L)) ) < 1e-8) 
 
+% 2c
+off_filepath = 'hw3_data/tri_quad_grid.off';
+[vertices, faces] = read_off(off_filepath);
+mesh_quad = MeshHandle(vertices, faces);
+f = repmat(1:30, 30,1)';
+mesh_quad.visualize_fun(f(:), 'vertices')
+view(3)
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+
+faces_area = mesh_quad.get_faces_area();
+Gf = diag([faces_area; faces_area; faces_area]);
+Gv = mesh_quad.get_vertices_area();
+E = mesh_quad.calc_E;
+grad = mesh_quad.calc_grad;
 
 %% Analysis
 
@@ -84,10 +100,49 @@ analyze_W(mesh_sphere, 'Sphere', '"1"s vector', ones(size(mesh_sphere.vertices,1
 analyze_W(mesh_vase, 'Vase', 'valence', mesh_vase.calc_valence(), 'vertices area', mesh_vase.get_vertices_area(), false)
 
 
+%% Spherical harmonics:
 
+L = 3; % leading order
+resolution = 50;
+[x, y, z] = sphere(resolution - 1);
 
+figure
+plot_amount = sum(1:(L+1));
+plot_counter = 1;
+hold on
 
+for l = 0:L
+    for m = 0:l
+        Y = spherical_harmonics(l, m, linspace(0,pi,resolution), linspace(-pi,pi,resolution));
+        subplot(L+1, L+1, sub2ind([L+1,L+1], m+1, l+1))
+        surf(x,y,z,abs(Y));
+        view(3)
+        title(['(L,M) = (' num2str(l) ',' num2str(m) ')' ])
+        xlabel('X')
+        ylabel('Y')
+        zlabel('Z')
+        plot_counter = plot_counter + 1;
+    end 
+end
+hold off
 
-
-
+% Eigen functions:
+W = mesh_sphere.calc_W;
+fig_rows = floor(sqrt(plot_amount)) + 1;
+fig_cloumns = floor(sqrt(plot_amount)) +1;
+[eigen_vectors, eigen_values] = eigs(W, fig_rows * fig_cloumns, 'sm');
+figure
+hold on
+for i = 1:numel(diag(eigen_values))
+    eigen_vector = eigen_vectors(:,i);
+    subplot(fig_rows, fig_cloumns, i)
+    mesh_sphere.visualize_fun(eigen_vector, 'faces');
+    view(3)
+    title(['eigen vector #' num2str(i)])
+    set(colorbar,'visible','off')
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Z')
+end
+hold off
 

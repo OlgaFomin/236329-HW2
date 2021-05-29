@@ -150,14 +150,14 @@ classdef MeshHandle < handle
         end
         function visualize_fun(obj, fun, type) 
             if strcmp(type,"faces")
-                figure()
+                %figure()
                 patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'FaceColor','flat');
                 colorbar
                 if min(fun)~=max(fun)
                     caxis([min(fun) max(fun)])
                 end
             elseif strcmp(type,"vertices")
-                figure()
+                %figure()
                 patch('Faces',obj.faces,'Vertices',obj.vertices,'FaceVertexCData',full(fun),'EdgeColor','interp','FaceColor','none');
                 colorbar
                 if min(fun)~=max(fun)
