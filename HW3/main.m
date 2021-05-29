@@ -8,7 +8,7 @@ clear all; close all; clc
 %% Objectives
 
 % 1
-off_filepath = 'hw2_data/sphere_s1.off';
+off_filepath = 'hw2_data/sphere_s0.off';
 [vertices, faces] = read_off(off_filepath);
 mesh_sphere = MeshHandle(vertices, faces);
 
@@ -22,17 +22,7 @@ mesh_sphere.visualize_vec(coord,Nf,faces_area,'faces');
 vertices_area = mesh_sphere.get_vertices_area();
 mesh_sphere.visualize_vec(coord,Nf,vertices_area,'vertices');
 
-% 3
-[Nv,coord] = mesh_sphere.vertex_normal();
-mesh_sphere.visualize_vec(coord,Nv,0,'none');
 
-
-% 4
-G = mesh_sphere.calc_gauss_curv();
-mesh_sphere.visualize_fun(G, 'vertices');
-
-H = mesh_sphere.calc_mean_curv();
-mesh_sphere.visualize_fun(H, 'vertices');
 
 % 2a
 % Gradiant
@@ -61,9 +51,7 @@ div = mesh_sphere.calc_div();
 divf = div*[gradf(:,1);gradf(:,2);gradf(:,3)];
 mesh_sphere.visualize_fun(divf, 'vertices');
 
-% Laplacian
-L = mesh_sphere.calc_laplas();
-mesh_sphere.visualize_fun(diag(L), 'vertices');
+
 
 % 2b
 % Comparing Laplace operator with cot-laplce implementation:
@@ -87,6 +75,20 @@ Gf = diag([faces_area; faces_area; faces_area]);
 Gv = mesh_quad.get_vertices_area();
 E = mesh_quad.calc_E;
 grad = mesh_quad.calc_grad;
+
+
+% 3
+[Nv,coord] = mesh_sphere.vertex_normal();
+mesh_sphere.visualize_vec(coord,Nv,0,'none');
+
+
+% 4
+G = mesh_sphere.calc_gauss_curv();
+mesh_sphere.visualize_fun(G, 'vertices');
+
+H = mesh_sphere.calc_mean_curv();
+mesh_sphere.visualize_fun(H, 'vertices');
+
 
 %% Analysis
 

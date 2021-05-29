@@ -4,8 +4,6 @@ function analyze_W(mesh, obj, const_fun_name, f_const, non_const_fun_name, f_non
     W = mesh.calc_W();
     
     % 1.1 - Null
-    f_const = mesh.vertices(:,3); % Vertices height
-    f_nonconst = mesh.calc_gauss_curv(); % Gaussian curvature
     const_null = vecnorm(W*f_const); 
     nonconst_null = vecnorm(W*f_nonconst);
     disp([obj, ' - ||W*f|| for constant f (', const_fun_name, ') = ', num2str(const_null)])
@@ -73,7 +71,7 @@ function analyze_W(mesh, obj, const_fun_name, f_const, non_const_fun_name, f_non
         figure();
         plot(ks, norms);
         title('||gi - f|| as a function of k');
-        xlabel('ki');
+        xlabel('k');
         ylabel('||gi - f||');
     end
 

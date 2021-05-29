@@ -179,6 +179,7 @@ classdef MeshHandle < handle
             
             figure();
             quiver3(X, Y, Z, vecx, vecy, vecz,'color', '#0072BD');
+            %quiver3(X, Y, Z, vecx, vecy, vecz,2,'color', 'black');
             hold on
             
             if strcmp(type,"faces")
